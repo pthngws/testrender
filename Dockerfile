@@ -1,14 +1,17 @@
-# Sử dụng base image có cài đặt JDK
-FROM openjdk:21-jdk-slim
 
-# Đặt thư mục làm việc trong container
+FROM maven:3-openjdk-21 AS build
 WORKDIR /app
 
-# Copy file JAR từ thư mục target vào container
-COPY target/websiteSellingLaptop-0.0.1-SNAPSHOT.jar app.jar
+COPY . .
+RUN mvn clean package -DskipTests
 
-# Expose port 8080 (hoặc port mà ứng dụng của bạn sử dụng)
+
+# Run stage
+
+FROM openjdk:21-jdk-slim
+WORKDIR /app
+
+COPY --from=build /target/websiteSellingLaptop-0.0.1-SNAPSHOT.jar app.jar
 EXPOSE 8080
 
-# Lệnh khởi chạy ứng dụng Spring Boot
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java","-jar","app.jar"]
