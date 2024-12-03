@@ -1,13 +1,12 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-		xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      	layout:decorate="~{layout.html}">
+
 <head>
     <title>Admin - Products</title>
    <link rel="stylesheet" href="/assets/css/admin/admin-product-list.css"> 
 </head>
 <body>
-	<section class="row" layout:fragment="content">
+<div th:replace="fragments/header :: header"></div>
+<div th:replace="fragments/chat :: div"></div>
+<div th:replace="fragments/cart :: div"></div>	
 	
 	<!-- Hiển thị thông báo lỗi, thông báo thành công, hoặc thông báo thông tin -->
     <div th:if="${errorMessage}" class="alert alert-danger">
@@ -78,6 +77,6 @@
     
     <!-- Liên kết tới JS -->
     <script src="/assets/js/admin/admin-product-list.js"></script>
-   	</section>
+<div th:replace="fragments/footer :: footer"></div>
 </body>
 </html>
