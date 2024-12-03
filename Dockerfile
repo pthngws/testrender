@@ -1,5 +1,5 @@
-# Chọn base image có sẵn JDK
-FROM openjdk:21-jdk-slim
+# Sử dụng base image có cài đặt JDK
+FROM openjdk:17-jdk-slim
 
 # Đặt thư mục làm việc
 WORKDIR /app
@@ -7,5 +7,8 @@ WORKDIR /app
 # Copy file JAR vào container
 COPY target/websiteSellingLaptop-0.0.1-SNAPSHOT.jar app.jar
 
-# Chạy ứng dụng Spring Boot
+# Expose port 8080 (hoặc port mà ứng dụng của bạn sử dụng)
+EXPOSE 8080
+
+# Lệnh khởi chạy ứng dụng Spring Boot
 ENTRYPOINT ["java", "-jar", "app.jar"]
