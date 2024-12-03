@@ -1,7 +1,4 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	layout:decorate="~{layout.html}">
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,8 +8,11 @@
 	href="/assets/css/admin/admin-product-details.css">
 </head>
 <body>
-	<section class="row" layout:fragment="content">
-
+	
+<div th:replace="fragments/header :: header"></div>
+<div th:replace="fragments/chat :: div"></div>
+<div th:replace="fragments/cart :: div"></div>
+	
 		<div class="container">
 			<h2>Thông Tin Chi Tiết Sản Phẩm</h2>
 
@@ -100,6 +100,7 @@
 
 
 		<script src="/assets/js/admin/admin-product-details.js"></script>
-	</section>
+
+<div th:replace="fragments/footer :: footer"></div>
 </body>
 </html>
