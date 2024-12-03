@@ -1,7 +1,4 @@
-<!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"
-	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	layout:decorate="~{layout.html}">
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,8 +11,10 @@
 </head>
 
 <body>
-	<section class="row" layout:fragment="content">
-
+	
+<div th:replace="fragments/header :: header"></div>
+<div th:replace="fragments/chat :: div"></div>
+<div th:replace="fragments/cart :: div"></div>
 
 		<div class="container mt-5">
 			<h1 class="center">Add Product</h1>
@@ -167,7 +166,7 @@
 			src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 		<script src="/assets/js/admin/admin-product-add.js"></script>
 		
-	</section>
+<div th:replace="fragments/footer :: footer"></div>
 </body>
 
 </html>
