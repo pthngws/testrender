@@ -1,7 +1,10 @@
 package com.group4.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -17,6 +20,6 @@ public class CategoryEntity {
     @Column(columnDefinition = "nvarchar(250) not null")
     private String name;
 
-    @Column(columnDefinition = "nvarchar(250)")
+    @Column(columnDefinition = "text")
     private String description;
 }

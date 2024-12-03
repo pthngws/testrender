@@ -1,9 +1,9 @@
 package com.group4.repository;
-
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 import com.group4.entity.ProductEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -54,5 +54,31 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
             @Param("disk") String disk,
             @Param("category") String category,
             Pageable pageable);
+
+
+    @Query("SELECT p.name, COUNT(p) FROM ProductEntity p GROUP BY p.name")
+    Page<Object[]> countProductsGroupedByName(Pageable pageable);
+
+    // Truy vấn phân trang cho các sản phẩm nhóm theo tên danh mục
+    @Query("SELECT p.category.name, COUNT(p) FROM ProductEntity p GROUP BY p.category.name")
+    Page<Object[]> countProductsGroupedByCategoryName(Pageable pageable);
+
+    // Truy vấn phân trang cho các sản phẩm nhóm theo tên nhà sản xuất
+    @Query("SELECT p.manufacturer.name, COUNT(p) FROM ProductEntity p GROUP BY p.manufacturer.name")
+    Page<Object[]> countProductsGroupedByManufacturerName(Pageable pageable);
+
+
+    
+    
+    @Query("SELECT p FROM ProductEntity p WHERE p.name = :productName")
+    List<ProductEntity> findByName(@Param("productName") String productName);
+    
+    
+    // Truy vấn để lấy sản phẩm đầu tiên với mỗi tên (không trùng lặp tên)
+    @Query("SELECT p FROM ProductEntity p WHERE p.name IN (SELECT DISTINCT p1.name FROM ProductEntity p1)")
+    Page<ProductEntity> findAllDistinctByName(Pageable pageable);
+
+    Page<ProductEntity> findAll(Pageable pageable);
+
 
 }

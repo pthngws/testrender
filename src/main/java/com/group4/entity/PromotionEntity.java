@@ -1,6 +1,7 @@
 package com.group4.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import java.util.Date;
 import lombok.*;
 
@@ -29,6 +30,8 @@ public class PromotionEntity {
     private Date validTo;
 
     @Column(name = "promotion_code", columnDefinition = "nvarchar(50)", unique = true)
+    @NotBlank(message = "Promotion code is required")
+    @Size(max = 50, message = "Promotion code cannot exceed 50 characters")
     private String promotionCode;
 
     @Column(columnDefinition = "nvarchar(1000)")

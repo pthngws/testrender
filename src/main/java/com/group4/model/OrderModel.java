@@ -5,11 +5,12 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
-@NoArgsConstructor
 @AllArgsConstructor
 @Data
+@NoArgsConstructor
 public class OrderModel {
     private Long orderId;
     private UserModel user;
@@ -19,7 +20,7 @@ public class OrderModel {
     //Trạng thái giao hàng
     private String shippingStatus;
     //Phương thức thanh toán
-    private PaymentModel payment;
+    private String paymentStatus;
     // Phương thức giao hàng
     private String shippingMethod;
     private String phoneNumber;

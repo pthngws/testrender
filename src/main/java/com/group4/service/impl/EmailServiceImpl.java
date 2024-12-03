@@ -43,6 +43,17 @@ public class EmailServiceImpl implements IEmailService {
             return "Lỗi khi gửi email thông báo hủy đơn hàng!";
         }
     }
+    @Override
+    public void sendInvoice(EmailDetail detail) {
+        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+        simpleMailMessage.setFrom("buiducthang13022004@gmail.com");
+        simpleMailMessage.setTo(detail.getRecipient());
+        simpleMailMessage.setSubject(detail.getSubject());
+        simpleMailMessage.setText(detail.getMsgBody());
+
+        this.mailSender.send(simpleMailMessage);
+    }
+
 
     @Override
     public void sendEmail(String to, String subject, String message) {

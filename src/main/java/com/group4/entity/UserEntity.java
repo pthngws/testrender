@@ -33,7 +33,7 @@ public class UserEntity {
     private String phone;
 
     @Column(columnDefinition = "nvarchar(10)")
-    private String roleNName;
+    private String roleName;
 
     @Column(name = "active", nullable = false)
     private boolean active = true; // Mặc định tài khoản được kích hoạt
@@ -41,5 +41,7 @@ public class UserEntity {
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "address_id", referencedColumnName = "address_id")
     private AddressEntity address;
-
+    public Boolean isActive() {
+        return active;
+    }
 }

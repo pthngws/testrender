@@ -4,7 +4,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.group4.config.VNPAYConfig;
 import com.group4.config.VietQRConfig;
+import com.group4.dto.EmailDetail;
 import com.group4.dto.PaymentDTO;
+import com.group4.entity.OrderEntity;
+import com.group4.entity.PaymentEntity;
 import com.group4.service.IPaymentService;
 import com.group4.repository.OrderRepository;
 import com.group4.repository.PaymentRepository;
@@ -19,8 +22,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import lombok.RequiredArgsConstructor;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,12 +36,12 @@ public class PaymentServiceImpl implements IPaymentService {
 
     private final VNPAYConfig vnPayConfig;
     private final VietQRConfig vietQRConfig;
-
     @Autowired
-    private OrderRepository orderRepository;
-
+    private final OrderRepository orderRepository;
     @Autowired
-    private PaymentRepository paymentRepository;
+    private final PaymentRepository paymentRepository;
+    @Autowired
+    private EmailServiceImpl emailService;
 
     @Override
     public String generateQr(int orderId, int amount) {
@@ -75,12 +83,44 @@ public class PaymentServiceImpl implements IPaymentService {
             throw new RuntimeException("Lỗi khi gọi API VietQR: " + e.getMessage(), e);
         }
     }
+    @Override
+    public void handlePayQr(Long orderId, int amount) {
+        Optional<OrderEntity> orderOtn = orderRepository.findById(orderId);
+        OrderEntity order = orderOtn.get();
+        order.setPaymentStatus("Completed");
+
+        PaymentEntity paymentEntity = new PaymentEntity();
+        paymentEntity.setTransactionID(orderId.toString());
+        paymentEntity.setPaymentMethod("QR");
+        paymentEntity.setPaymentStatus("Completed");
+        paymentEntity.setPaymentDate(LocalDateTime.now());
+        paymentEntity.setTotal(amount);
+        paymentEntity.setOrder(order);
+
+        paymentRepository.save(paymentEntity);
+        order.setPayment(paymentEntity);
+        orderRepository.save(order);
+
+        EmailDetail emailDetail = new EmailDetail();
+
+        String body = "Chào " + order.getCustomer().getName() + ",\n\n" +
+                "Chúng tôi xác nhận rằng bạn đã thanh toán thành công cho đơn hàng (Mã đơn hàng: " + orderId + ").\n" +
+                "Số tiền thanh toán: " + amount + " VND.\n" +
+                "Ngày thanh toán: " + LocalDateTime.now() + ".\n\n" +
+                "Cảm ơn bạn đã tin tưởng và mua sắm tại cửa hàng của chúng tôi.\n\n" +
+                "Trân trọng,\nYour Company Name";
+        emailDetail.setMsgBody(body);
+        emailDetail.setRecipient(order.getCustomer().getEmail());
+        emailDetail.setSubject("Thông báo thánh toán đơn hàng");
+        emailService.sendInvoice(emailDetail);
+    }
 
     @Override
     public PaymentDTO createVnPayPayment(HttpServletRequest request) {
         long amount = Integer.parseInt(request.getParameter("amount")) * 100L;
         String bankCode = request.getParameter("bankCode");
-        Map<String, String> vnpParamsMap = vnPayConfig.getVNPayConfig();
+        String orderId = request.getParameter("orderId");
+        Map<String, String> vnpParamsMap = vnPayConfig.getVNPayConfig(orderId);
         vnpParamsMap.put("vnp_Amount", String.valueOf(amount));
         if (bankCode != null && !bankCode.isEmpty()) {
             vnpParamsMap.put("vnp_BankCode", bankCode);
@@ -96,5 +136,46 @@ public class PaymentServiceImpl implements IPaymentService {
                 .code("ok")
                 .message("success")
                 .paymentUrl(paymentUrl).build();
+    }
+    @Override
+    public void handlePayBank(String transactionNo, String bankCode, String transactionStatus, LocalDateTime localDateTime, int amount, Long orderId){
+        Optional<OrderEntity> orderOtn = orderRepository.findById(orderId);
+        OrderEntity order = orderOtn.get();
+        order.setPaymentStatus("Completed");
+
+        PaymentEntity paymentEntity = new PaymentEntity();
+        paymentEntity.setTransactionID(transactionNo);
+        paymentEntity.setPaymentMethod(bankCode);
+        paymentEntity.setPaymentStatus(transactionStatus);
+        paymentEntity.setPaymentDate(localDateTime);
+        paymentEntity.setTotal(amount);
+        paymentEntity.setOrder(order);
+
+        paymentRepository.save(paymentEntity);
+        order.setPayment(paymentEntity);
+        orderRepository.save(order);
+
+        EmailDetail emailDetail = new EmailDetail();
+
+        String body = "Chào " + order.getCustomer().getName() + ",\n\n" +
+                "Chúng tôi xác nhận rằng bạn đã thanh toán thành công cho đơn hàng (Mã đơn hàng: " + orderId + ").\n" +
+                "Số tiền thanh toán: " + amount + " VND.\n" +
+                "Ngày thanh toán: " + localDateTime + ".\n\n" +
+                "Cảm ơn bạn đã tin tưởng và mua sắm tại cửa hàng của chúng tôi.\n\n" +
+                "Trân trọng,\nYour Company Name";
+        emailDetail.setMsgBody(body);
+        emailDetail.setRecipient(order.getCustomer().getEmail());
+        emailDetail.setSubject("Thông báo thánh toán đơn hàng");
+        emailService.sendInvoice(emailDetail);
+    }
+
+
+
+    public Double getDailyRevenue(LocalDate date) {
+        return paymentRepository.getRevenueByDay(date);
+    }
+
+    public List<Map<String, Object>> getYearlyRevenue(int year) {
+        return paymentRepository.getMonthlyRevenue(year);
     }
 }
