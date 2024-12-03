@@ -34,33 +34,74 @@
 <div th:replace="fragments/header :: header"></div>
 <div th:replace="fragments/chat :: div"></div>
 <div th:replace="fragments/cart :: div"></div>
-<h1>Danh sách các sản phẩm đã mua</h1>
-<table border="1" style="width: 100%; border-collapse: collapse;">
-    <thead>
-    <tr>
-        <th>Mã đơn hàng</th>
-        <th>Tên sản phẩm</th>
-        <th>Giá</th>
-        <th>Số lượng</th>
-        <th>Tổng</th>
-    </tr>
-    </thead>
-    <tbody>
+<div class="container mt-3">
+    <div th:if="${successMessage}" class="alert alert-success" role="alert">
+        <span th:text="${successMessage}"></span>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+        <span th:text="${errorMessage}"></span>
+    </div>
+</div>
+<div class="container mt-5">
+    <!-- Tiêu đề -->
+    <h1 class="text-center">Danh sách khách hàng</h1>
 
-    <!-- Kiểm tra nếu danh sách purchasedProducts rỗng hoặc null -->
-    <tr th:if="${#lists.isEmpty(purchasedProducts)}">
-        <td colspan="5" style="text-align: center; font-style: italic;">Không có sản phẩm nào trong đơn hàng này.</td>
-    </tr>
+    <!-- Tìm kiếm khách hàng -->
+    <div class="row mt-4 mb-3">
+        <div class="col-md-6 offset-md-3">
+            <form th:action="@{/admin/customers/search}" method="get" class="d-flex">
+                <input type="text" name="keyword" class="form-control me-0"
+                       placeholder="Tìm kiếm khách hàng theo tên hoặc email"
+                       style="border: 2px solid #444444; border-radius: 0; height: 40px"/>
 
-    <!-- Lặp qua từng đơn hàng -->
-    <tr th:each="order : ${purchasedProducts}">
-        <td colspan="5" style="text-align: center; font-weight: bold;">
-            Đơn hàng #: <span th:text="${order.orderId}"></span> - Ngày đặt: <span th:text="${order.orderDate}"></span>
-        </td>
-    </tr>
+                <button type="submit" class="search-btn"
+                        style="background-color: #444444; color: white; border: none; padding: 10px; cursor: pointer; width: 40px; height: 40px; border-radius: 0;"
+                        onmouseover="this.style.backgroundColor='#d8373e';"
+                        onmouseout="this.style.backgroundColor='#444444';">
+                    <i class="fa fa-search"></i>
+                </button>
+            </form>
+        </div>
+    </div>
 
-    </tbody>
-</table>
+    <!-- Bảng thông tin khách hàng -->
+    <table class="table table-bordered table-striped text-center">
+        <thead class="table-custom-header">
+        <tr>
+            <th style="text-align: center; vertical-align: middle;" scope="col">STT</th>
+            <th style="text-align: center; vertical-align: middle;" scope="col">Tên</th>
+            <th style="text-align: center; vertical-align: middle;" scope="col">Email</th>
+            <th style="text-align: center; vertical-align: middle;" scope="col">Số điện thoại</th>
+            <th style="text-align: center; vertical-align: middle;" scope="col">Địa chỉ</th>
+            <th style="text-align: center; vertical-align: middle;" scope="col">Thông tin chi tiết</th>
+            <th style="text-align: center; vertical-align: middle;" scope="col">Trạng thái</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Sử dụng Thymeleaf để duyệt danh sách khách hàng -->
+        <tr th:each="customer, iterStat : ${customers}">
+            <td th:text="${iterStat.count}">1</td>
+            <td th:text="${customer.name}">Nguyễn Văn A</td>
+            <td th:text="${customer.email}">example@gmail.com</td>
+            <td th:text="${customer.phone}">0123456789</td>
+            <td th:text="${customer.address.other} + ' ' + ${customer.address.commune} + ', ' +${customer.address.district} + ', ' +${customer.address.province} + ', ' +${customer.address.country}"></td>
+
+            <td style="text-align: center; vertical-align: middle;">
+                <a th:href="@{/admin/customers/{id}(id=${customer.userID})}" class="btn btn-danger custom-hover">Chi tiết</a>
+            </td>
+
+            <td style="text-align: center; vertical-align: middle;">
+                <input type="checkbox" disabled th:checked="${customer.active}"/>
+            </td>
+
+        </tr>
+        <!-- Hiển thị thông báo nếu không có khách hàng nào -->
+        <tr th:if="${#lists.isEmpty(customers)}">
+            <td colspan="8" class="text-center">Không có khách hàng nào!</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
 <div th:replace="fragments/footer :: footer"></div>
 <!--All jQuery, Third Party Plugins & Activation (main.js) Files-->
 <script th:src="@{/assets/js/vendor/modernizr-3.6.0.min.js}"></script>
