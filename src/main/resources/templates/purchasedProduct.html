@@ -27,6 +27,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
 <style>
             .container {
                 width: 80%;       /* Thiết lập chiều rộng container chiếm 80% */
@@ -58,8 +59,7 @@
                 color: #d8373e;
             }
 
-        </style
-
+        </style>
 </head>
 <body>
 <div th:replace="fragments/header :: header"></div>
@@ -234,5 +234,5 @@
 <script th:src="@{/assets/js/main.js}"></script>
 <!-- Switcher JS [Please Remove this when Choose your Final Projct] -->
 <script th:src="@{/assets/js/switcher.js}"></script>
-                    <div th:replace="fragments/footer :: footer"></div>
+<div th:replace="fragments/footer :: footer"></div>
 </body>
